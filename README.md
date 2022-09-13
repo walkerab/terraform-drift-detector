@@ -1,4 +1,4 @@
-This software is a proof-of-concept and in what might be considered alpha stage. It comes with no guarantees. Use at your own risk.
+This software is a proof-of-concept in alpha stage. It comes with no guarantees. Use at your own risk.
 
 # Terraform Drift Detector
 
@@ -35,7 +35,13 @@ optional arguments:
 
 ## TODO
 
+- Add installation instructions
 - Option to specify directory to run plan against
-- Store state in the cloud so this can be used in CI/CD
+- Store state in the cloud so this can be used on stateless runners
 - Pass script output like drift difference to callback scripts
+- Semver tagged releases
+- JSON output to pipe into other scripts
 - Have a warning action for when drift has changed but it has changed to a previously known state
+- Option for detailed exit codes instead of callback actions
+- Prevent locking of state
+- Provide a way to pass CLI options to terraform plan
