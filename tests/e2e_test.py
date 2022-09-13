@@ -46,6 +46,17 @@ def test_it_detects_drift():
   test -e did_drift && ! test -e did_resolve
   """)
 
+def test_it_detects_additional_drift():
+  assert exec_bash("""
+  terraform apply -auto-approve
+  export TEST_SG_ID=$(terraform output -raw sg_id)
+  aws ec2 create-tags --region us-east-1 --resource $TEST_SG_ID --tags Key=AnotherTag,Value=another-tag-value
+  ../../detect_drift
+  aws ec2 create-tags --region us-east-1 --resource $TEST_SG_ID --tags Key=AnotherAdditionalTag,Value=another-additional-tag-value
+  ../../detect_drift -d "touch did_drift" -r "touch did_resolve"
+  test -e did_drift && ! test -e did_resolve
+  """)
+
 def test_it_detects_drift_is_resolved():
   assert exec_bash("""
   terraform apply -auto-approve
