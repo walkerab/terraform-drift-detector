@@ -8,7 +8,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--on-new-drift', '-d', help = "Bash expression to be executed when new drift is detected", type = str)
   parser.add_argument('--on-resolve', '-r', help = "Bash expression to be executed when all drift is resolved", type = str)
-  parser.add_argument('--state-file-path', '-s', help = "Where to store the drift state", type = str, default = "previous_plan_results")
+  parser.add_argument('--state-file-path', '-s', help = "Where to store the drift state. Default: ./previous_plan_results", type = str, default = "previous_plan_results")
   args = parser.parse_args()
 
   previous_plan_results = TerraformPlanResults.load(args.state_file_path)
