@@ -8,15 +8,16 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--on-new-drift', '-d', help = "Bash expression to be executed when new drift is detected", type = str)
   parser.add_argument('--on-resolve', '-r', help = "Bash expression to be executed when all drift is resolved", type = str)
+  parser.add_argument('--state-file-path', '-s', help = "Where to store the drift state", type = str, default = "previous_plan_results")
   args = parser.parse_args()
 
-  previous_plan_results = TerraformPlanResults.load('previous_plan_results')
+  previous_plan_results = TerraformPlanResults.load(args.state_file_path)
   current_plan_results = run_terraform_plan()
   drift_detector = TerraformDriftDetector(
     previous_plan_results = previous_plan_results,
     current_plan_results = current_plan_results
   )
-  current_plan_results.save('previous_plan_results')
+  current_plan_results.save(args.state_file_path)
 
   if drift_detector.drift_resolved():
     print('All drift is resolved.')

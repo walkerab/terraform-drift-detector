@@ -12,11 +12,13 @@ def run_around_tests():
   terraform init
   rm did_drift
   rm did_resolve
+  rm previous_plan_results
   """) 
   yield
   exec_bash("""
   rm did_drift
   rm did_resolve
+  rm previous_plan_results
   terraform destroy -auto-approve \
   && rm -rf .terraform
   """)
@@ -27,6 +29,13 @@ def exec_bash(code: str) -> bool:
 
 def test_it_runs_on_a_fresh_terraform_module():
   assert exec_bash('../../detect_drift')
+
+def test_we_can_specify_the_state_file():
+  assert exec_bash("""
+  terraform apply -auto-approve
+  ../../detect_drift -s otherfile
+  test -e otherfile && ! test -e previous_plan_results && rm otherfile
+  """)
 
 def test_it_detects_drift():
   assert exec_bash("""
