@@ -1,17 +1,37 @@
 #!/usr/bin/env python3
 import subprocess
+import argparse
 from terraform_drift_detector import TerraformDriftDetector
 from terraform_plan_results import TerraformPlanResults
 
 def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--on-new-drift', '-d', help = "Bash expression to be executed when new drift is detected", type = str)
+  parser.add_argument('--on-resolve', '-r', help = "Bash expression to be executed when all drift is resolved", type = str)
+  args = parser.parse_args()
+
   previous_plan_results = TerraformPlanResults.load('previous_plan_results')
   current_plan_results = run_terraform_plan()
   drift_detector = TerraformDriftDetector(
     previous_plan_results = previous_plan_results,
     current_plan_results = current_plan_results
   )
-  drift_detector.debug()
   current_plan_results.save('previous_plan_results')
+
+  if drift_detector.drift_resolved():
+    print('All drift is resolved.')
+    if args.on_resolve != None:
+      print(f"Triggering: {args.on_resolve}")
+      subprocess.run(args.on_resolve, shell=True)
+  elif drift_detector.new_drift_detected():
+    print('New drift detected!')
+    print('===================')
+    print(drift_detector.diff())
+    print('===================')
+    if args.on_new_drift != None:
+      print(f"Triggering: {args.on_new_drift}")
+      subprocess.run(args.on_new_drift, shell=True)
+
 
 def run_terraform_plan() -> TerraformPlanResults:
   # By splitting this into two steps we can suppress the "Refreshing..."

@@ -5,3 +5,4 @@ terraform.tfstate.backup
 tfplan
 previous_plan_results
 .terraform/
+.terraform.tfstate.lock.info

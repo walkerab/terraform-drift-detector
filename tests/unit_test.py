@@ -1,84 +1,83 @@
-from json import load
-import os
 import sys
-import tempfile
 sys.path.append("..")
+import os
+import tempfile
 import pytest
 from terraform_drift_detector import TerraformDriftDetector
 from terraform_plan_results import TerraformPlanResults
 
-def test_should_not_alert_or_resolve_because_there_is_no_state():
+def test_should_not_detect_drift_or_resolve_because_there_is_no_state():
   drift_detector = TerraformDriftDetector()
-  assert drift_detector.should_alert() == False
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == False
+  assert drift_detector.drift_resolved() == False
 
-def test_should_not_alert_or_resolve_because_there_is_no_drift(
+def test_should_not_detect_drift_or_resolve_because_there_is_no_drift(
   plan_results_with_no_drift
 ):
   drift_detector = TerraformDriftDetector(
     current_plan_results = plan_results_with_no_drift
   )
-  assert drift_detector.should_alert() == False
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == False
+  assert drift_detector.drift_resolved() == False
 
-def test_should_alert_but_not_resolve_because_there_is_drift(
+def test_should_detect_drift_but_not_resolve_because_there_is_drift(
     plan_results_with_some_drift
 ):
   drift_detector = TerraformDriftDetector(
     current_plan_results = plan_results_with_some_drift
   )
-  assert drift_detector.should_alert() == True
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == True
+  assert drift_detector.drift_resolved() == False
 
-def test_should_not_alert_or_resolve_because_there_is_no_drift_and_there_previously_was_no_drift(
+def test_should_not_detect_drift_or_resolve_because_there_is_no_drift_and_there_previously_was_no_drift(
   plan_results_with_no_drift
 ):
   drift_detector = TerraformDriftDetector(
     previous_plan_results = plan_results_with_no_drift,
     current_plan_results = plan_results_with_no_drift
   )
-  assert drift_detector.should_alert() == False
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == False
+  assert drift_detector.drift_resolved() == False
 
-def test_should_alert_but_not_resolve_because_there_was_no_drift_but_now_there_is(
+def test_should_detect_drift_but_not_resolve_because_there_was_no_drift_but_now_there_is(
   plan_results_with_no_drift, plan_results_with_some_drift
 ):
   drift_detector = TerraformDriftDetector(
     previous_plan_results = plan_results_with_no_drift,
     current_plan_results = plan_results_with_some_drift
   )
-  assert drift_detector.should_alert() == True
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == True
+  assert drift_detector.drift_resolved() == False
 
-def test_should_resolve_but_not_alert_because_there_is_no_drift_but_there_previously_was_drift(
+def test_should_resolve_but_not_detect_drift_because_there_is_no_drift_but_there_previously_was_drift(
   plan_results_with_no_drift, plan_results_with_some_drift
 ):
   drift_detector = TerraformDriftDetector(
     previous_plan_results = plan_results_with_some_drift,
     current_plan_results = plan_results_with_no_drift
   )
-  assert drift_detector.should_alert() == False
-  assert drift_detector.should_resolve() == True
+  assert drift_detector.new_drift_detected() == False
+  assert drift_detector.drift_resolved() == True
 
-def test_should_not_alert_or_resolve_because_drift_is_same_as_last_time(
+def test_should_not_detect_drift_or_resolve_because_drift_is_same_as_last_time(
   plan_results_with_some_drift
 ):
   drift_detector = TerraformDriftDetector(
     previous_plan_results = plan_results_with_some_drift,
     current_plan_results = plan_results_with_some_drift
   )
-  assert drift_detector.should_alert() == False
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == False
+  assert drift_detector.drift_resolved() == False
 
-def test_should_alert_but_not_resolve_because_drift_is_different_from_last_time(
+def test_should_detect_drift_but_not_resolve_because_drift_is_different_from_last_time(
   plan_results_with_some_drift, plan_results_with_more_drift
 ):
   drift_detector = TerraformDriftDetector(
     previous_plan_results = plan_results_with_some_drift,
     current_plan_results = plan_results_with_more_drift
   )
-  assert drift_detector.should_alert() == True
-  assert drift_detector.should_resolve() == False
+  assert drift_detector.new_drift_detected() == True
+  assert drift_detector.drift_resolved() == False
 
 def test_saving_and_loading_plan_results():
   RESULTS_PATH = os.path.join(tempfile.gettempdir(), 'plan_results')

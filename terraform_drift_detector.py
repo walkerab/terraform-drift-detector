@@ -1,6 +1,5 @@
 import difflib
 from typing import Optional
-from xmlrpc.client import Boolean
 
 from terraform_plan_results import TerraformPlanResults
 
@@ -11,7 +10,7 @@ class TerraformDriftDetector:
     self.current_plan_results = current_plan_results
     self.previous_plan_results = previous_plan_results
 
-  def should_alert(self) -> Boolean:
+  def new_drift_detected(self) -> bool:
     if self.current_plan_results == None:
       return False
     else:
@@ -20,7 +19,7 @@ class TerraformDriftDetector:
         and self.current_plan_results.changes_present()
       )
 
-  def should_resolve(self) -> Boolean:
+  def drift_resolved(self) -> bool:
     return (
       self.current_plan_results != None
       and self.previous_plan_results != None
@@ -45,13 +44,13 @@ class TerraformDriftDetector:
     return message[message.find(marker):]
 
   def debug(self) -> None:
-    print("========== REFRESH_RESULTS ==========")
+    print("========== CURRENT_PLAN_RESULTS ==========")
     if self.current_plan_results != None:
       print(self.current_plan_results.message)
     else:
       print("N/A")
 
-    print("========== PREVIOUS_REFRESH_RESULTS ==========")
+    print("========== PREVIOUS_PLAN_RESULTS ==========")
     if self.previous_plan_results != None:
       print(self.previous_plan_results.message)
     else:
@@ -60,5 +59,5 @@ class TerraformDriftDetector:
     print("========== DIFF ==========")
     print(self.diff())
     print("========== META ==========")
-    print(f"SHOULD_ALERT: {self.should_alert()}")
-    print(f"SHOULD_RESOLVE: {self.should_resolve()}")
+    print(f"SHOULD_ALERT: {self.new_drift_detected()}")
+    print(f"SHOULD_RESOLVE: {self.drift_resolved()}")
