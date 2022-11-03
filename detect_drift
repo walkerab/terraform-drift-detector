@@ -32,6 +32,8 @@ def main():
     if args.on_new_drift != None:
       print(f"Triggering: {args.on_new_drift}")
       subprocess.run(args.on_new_drift, shell=True)
+  else:
+    print('Nothing to report.')
 
 
 def run_terraform_plan() -> TerraformPlanResults:
