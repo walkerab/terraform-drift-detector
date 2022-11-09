@@ -20,20 +20,22 @@ def main():
   current_plan_results.save(args.state_file_path)
 
   if drift_detector.drift_resolved():
-    print('All drift is resolved.')
+    print('All drift has been resolved!')
     if args.on_resolve != None:
       print(f"Triggering: {args.on_resolve}")
       subprocess.run(args.on_resolve, shell=True)
   elif drift_detector.new_drift_detected():
     print('New drift detected!')
-    print('===================')
+    print('====================')
     print(drift_detector.diff())
-    print('===================')
+    print('====================')
     if args.on_new_drift != None:
       print(f"Triggering: {args.on_new_drift}")
       subprocess.run(args.on_new_drift, shell=True)
+  elif current_plan_results.changes_present():
+    print('Drift exists but has not changed.')
   else:
-    print('Nothing to report.')
+    print('Nothing to report. There is no drift.')
 
 
 def run_terraform_plan() -> TerraformPlanResults:
