@@ -15,7 +15,7 @@ class TerraformPlanResults:
     error:Boolean = False,
     changes_present:Boolean = False
   ) -> None:
-    self.message = TerraformPlanResults.__remove_unwanted_message_cruft(message)
+    self.message = self.__remove_unwanted_message_cruft(message)
     if exit_code != None:
       self.exit_code = exit_code
     elif error:
@@ -27,13 +27,15 @@ class TerraformPlanResults:
     else:
       self.exit_code = self.EXIT_CODES["NO_CHANGES"]
 
-  @classmethod
-  def __remove_unwanted_message_cruft(cls, message) -> str:
-    marker = "Terraform will perform the following actions:"  
+  def __remove_unwanted_message_cruft(self, message) -> str:
     return re.sub(
       r"\s*# \(.*\)", # e.g. `# (8 unchanged attributes hidden)`
       "",
-      message[message.find(marker):]
+      message[
+        message.find("Terraform detected the following changes made outside of Terraform")
+        :
+        message.find("Unless you have made equivalent changes to your configuration,")
+      ]
     )
 
   def no_changes(self) -> Boolean:

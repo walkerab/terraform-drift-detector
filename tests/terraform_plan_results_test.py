@@ -3,7 +3,7 @@ sys.path.append("..")
 from terraform_plan_results import TerraformPlanResults
 
 def test_terraform_cruft_is_stripped_from_output():
-    input = """
+  input = """
 Note: Objects have changed outside of Terraform
 
 Terraform detected the following changes made outside of Terraform since the last "terraform apply":
@@ -49,19 +49,19 @@ Terraform will perform the following actions:
     }
 
 Plan: 0 to add, 1 to change, 0 to destroy."""
-    expected = """Terraform will perform the following actions:
+  expected = """Terraform detected the following changes made outside of Terraform since the last "terraform apply":
 
-  # aws_security_group.sg will be updated in-place
+  # aws_security_group.sg has been changed
   ~ resource "aws_security_group" "sg" {
         id                     = "sg-00455d825359f2773"
         name                   = "terraform-20220911221017222100000001"
       ~ tags                   = {
-          - "AnotherTag" = "more-different" -> null
+          + "AnotherTag" = "more-different"
         }
       ~ tags_all               = {
-          - "AnotherTag" = "more-different" -> null
+          + "AnotherTag" = "more-different"
         }
     }
 
-Plan: 0 to add, 1 to change, 0 to destroy."""
-    assert TerraformPlanResults(message = input).message == expected
+"""
+  assert TerraformPlanResults(message = input).message == expected
