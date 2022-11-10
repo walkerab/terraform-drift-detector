@@ -31,18 +31,14 @@ class TerraformDriftDetector:
     if self.current_plan_results != None and self.previous_plan_results != None:
       return "".join(
         difflib.unified_diff(
-          self.strip_terraform_drift_message(self.previous_plan_results.message).splitlines(True),
-          self.strip_terraform_drift_message(self.current_plan_results.message).splitlines(True),
+          self.previous_plan_results.message.splitlines(True),
+          self.current_plan_results.message.splitlines(True),
         )
       )
     else:
       return None
 
   @classmethod
-  def strip_terraform_drift_message(cls, message) -> str:
-    marker = "Terraform will perform the following actions:"
-    return message[message.find(marker):]
-
   def debug(self) -> None:
     print("========== CURRENT_PLAN_RESULTS ==========")
     if self.current_plan_results != None:
