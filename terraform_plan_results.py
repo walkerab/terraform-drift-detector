@@ -47,7 +47,7 @@ class TerraformPlanResults:
   def changes_present(self) -> Boolean:
     return self.exit_code == self.EXIT_CODES["CHANGES_PRESENT"]
 
-  def save(self, path) -> None:
+  def save(self, path: str) -> None:
     try:
       file = open(path, "wb")
     except:

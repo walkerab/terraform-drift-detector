@@ -1,6 +1,5 @@
-import difflib
 from typing import Optional
-
+from differ import diff
 from terraform_plan_results import TerraformPlanResults
 
 class TerraformDriftDetector:
@@ -29,12 +28,7 @@ class TerraformDriftDetector:
 
   def diff(self) -> Optional[str]:
     if self.current_plan_results != None and self.previous_plan_results != None:
-      return "".join(
-        difflib.unified_diff(
-          self.previous_plan_results.message.splitlines(True),
-          self.current_plan_results.message.splitlines(True),
-        )
-      )
+      return diff(self.previous_plan_results.message, self.current_plan_results.message)
     else:
       return None
 
