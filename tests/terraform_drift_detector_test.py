@@ -69,32 +69,6 @@ def test_should_not_detect_drift_or_resolve_because_drift_is_same_as_last_time(
   assert drift_detector.new_drift_detected() == False
   assert drift_detector.drift_resolved() == False
 
-def test_diff_output(
-  plan_results_with_no_drift, plan_results_with_some_drift
-):
-  drift_detector = TerraformDriftDetector(
-    previous_plan_results = plan_results_with_no_drift,
-    current_plan_results = plan_results_with_some_drift
-  )
-  assert drift_detector.diff() == """--- 
-+++ 
-@@ -0,0 +1,14 @@
-+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
-+
-+  # aws_security_group.sg has been changed
-+  ~ resource "aws_security_group" "sg" {
-+        id                     = "sg-00455d825359f2773"
-+        name                   = "terraform-20220911221017222100000001"
-+      ~ tags                   = {
-+          ~ "Name" = "terraform-drift-test" -> "foobar"
-+        }
-+      ~ tags_all               = {
-+          ~ "Name" = "terraform-drift-test" -> "foobar"
-+        }
-+    }
-+
-"""
-
 def test_should_detect_drift_but_not_resolve_because_drift_is_different_from_last_time(
   plan_results_with_some_drift, plan_results_with_more_drift
 ):

@@ -9,12 +9,9 @@ hello
   b = """
 goodbye
 """
-  expected_diff = """--- 
-+++ 
-@@ -1,2 +1,2 @@
- 
+  expected_diff = """ 
 -hello
 +goodbye
 """
-  print(diff(a,b))
   assert expected_diff == diff(a,b)
+
